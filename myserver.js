@@ -8,16 +8,38 @@ const app = express();
 // });
 
 app.get("/api/rates", function (req, res) {
-  console.log(req.query);
+  // console.log(req.query);
 
-  request("https://api.exchangeratesapi.io/latest?base=USD", function (
-    error,
-    response,
-    body
-  ) {
-    console.log(body);
-  });
-  // console.log(req.path);
+  // let rate;
+  let newObj;
+  let setBase = req.query.base;
+  let setsymbols = req.query.symbols;
+
+  request(
+    `https://api.exchangeratesapi.io/latest?base=${setBase}&symbols=${setsymbols}`,
+    function (error, response, body) {
+      console.log(response.statusCode);
+
+      let result = JSON.parse(body);
+
+      if (response.statusCode === 200) {
+        // rate = result.rates;
+        console.log(JSON.stringify(result));
+
+        newObj = {
+          results: result,
+        };
+
+        console.log(JSON.stringify(newObj));
+
+        res.send(JSON.stringify(newObj));
+      } else {
+        res.send(JSON.stringify(result));
+      }
+    }
+  );
+
+  // console.log(Object.keys(rate));
 });
 
 app.listen(3000, function () {
