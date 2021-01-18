@@ -11,7 +11,7 @@ app.get("/api/rates", function (req, res) {
   request(
     `https://api.exchangeratesapi.io/latest?base=${setBase}&symbols=${setsymbols}`,
     function (error, response, body) {
-      console.log(response.statusCode);
+      // console.log(response.statusCode);
 
       let result = JSON.parse(body);
 
