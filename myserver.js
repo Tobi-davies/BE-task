@@ -3,17 +3,10 @@ const request = require("request");
 
 const app = express();
 
-// app.get("/api/rates", function (req, res) {
-//   res.sendFile(__dirname + "/index.html");
-// });
-
 app.get("/api/rates", function (req, res) {
-  // console.log(req.query);
-
-  // let rate;
   let newObj;
   let setBase = req.query.base;
-  let setsymbols = req.query.symbols;
+  let setsymbols = req.query.currency;
 
   request(
     `https://api.exchangeratesapi.io/latest?base=${setBase}&symbols=${setsymbols}`,
@@ -22,28 +15,39 @@ app.get("/api/rates", function (req, res) {
 
       let result = JSON.parse(body);
 
-      if (response.statusCode === 200) {
-        // rate = result.rates;
-        console.log(JSON.stringify(result));
+      if (response.statusCode === 200 && setBase && setsymbols) {
+        // console.log(JSON.stringify(result));
 
         newObj = {
-          results: result,
+          results: {
+            base: result.base,
+            date: result.date,
+            rates: result.rates,
+          },
         };
-
-        console.log(JSON.stringify(newObj));
-
-        res.send(JSON.stringify(newObj));
+      } else if (setsymbols === "" && setBase === "") {
+        newObj = {
+          error: "Base and Currency query parameters are required",
+        };
+      } else if (setsymbols !== "" && setBase === "") {
+        newObj = {
+          message: "Base  query parameter is required",
+        };
+      } else if (setBase !== "" && setsymbols === "") {
+        newObj = {
+          message: "Currency query parameter is required",
+        };
       } else {
-        res.send(JSON.stringify(result));
+        newObj = {
+          error: result.error,
+          message: `Request failed with status code ${response.statusCode}`,
+        };
       }
+      res.send(JSON.stringify(newObj));
     }
   );
-
-  // console.log(Object.keys(rate));
 });
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("server is running");
 });
-
-// base=CZK&currency=EUR,GBP,USD
