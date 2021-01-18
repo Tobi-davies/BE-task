@@ -16,8 +16,6 @@ app.get("/api/rates", function (req, res) {
       let result = JSON.parse(body);
 
       if (response.statusCode === 200 && setBase && setsymbols) {
-        // console.log(JSON.stringify(result));
-
         newObj = {
           results: {
             base: result.base,
